@@ -383,14 +383,11 @@ if [[ "${arg_c:?}" = "1" ]]; then
   if [[ -f .vscode/launch.json ]]; then
     notice ".vscode/launch.json exists. Skipped."
   else
-    curl  -o .vscode/launch.json https://gist.githubusercontent.com/simgunz/1c0966f9a32d8c30d6d0fe3945ef529d/raw/dd5025ef0ce831fddf93a1a8f1fdffa501bbd74e/launch.json
+    curl  -s -o .vscode/launch.json https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/launch.json
   fi
   if [[ -f .vscode/settings.json ]]; then
     notice ".vscode/settings.json exists. Skipped."
   else
-    curl  -o .vscode/settings.json https://gist.githubusercontent.com/simgunz/1756f9eccc65e2439509c1261545bf9d/raw/6a9549bf6dbe3097fe5b6a8f78d5c18df827502b/settings.json
+    curl  -s -o .vscode/settings.json https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/settings.json
   fi
 fi
-
-# All of these go to STDERR, so you can use STDOUT for piping machine readable information to other software
-
