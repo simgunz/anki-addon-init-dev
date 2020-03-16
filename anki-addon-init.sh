@@ -136,20 +136,33 @@ function help () {
 
 # shellcheck disable=SC2015
 [[ "${__usage+x}" ]] || read -r -d '' __usage <<-'EOF' || true # exits non-zero when EOF encountered
-  -f --file  [arg] Filename to process. Required.
-  -t --temp  [arg] Location of tempfile. Default="/tmp/bar"
+  -u --update      Update Anki
+  -c --vs-code     Setup Visual Studio Code
+  -u --build-ui    Compile *.ui forms
+  -d --debug       Debug mode
   -v               Enable verbose mode, print script as it is executed
-  -d --debug       Enables debug mode
   -h --help        This page
-  -n --no-color    Disable color output
-  -1 --one         Do just one thing
 EOF
 
 # shellcheck disable=SC2015
 [[ "${__helptext+x}" ]] || read -r -d '' __helptext <<-'EOF' || true # exits non-zero when EOF encountered
- This is Bash3 Boilerplate's help text. Feel free to add any description of your
- program or elaborate more on command-line arguments. This section is not
- parsed and will be added as-is to the help.
+
+ This script initialize a development environment for developing an anki addon.
+
+ The resulting project structure is:
+   addon/
+   anki/
+   |-- anki/
+   |-- profiles/
+   releases/
+   .pyenv -> anki/anki/pyenv
+   .vscode
+   |-- launch.json
+   |-- settings.json
+
+
+ EXAMPLES:
+   anki-addon-dev-init
 EOF
 
 # Translate usage string -> getopts arguments, and set $arg_<flag> defaults
@@ -347,11 +360,6 @@ if [[ "${arg_v:?}" = "1" ]]; then
   set -o verbose
 fi
 
-# no color mode
-if [[ "${arg_n:?}" = "1" ]]; then
-  NO_COLOR="true"
-fi
-
 # help mode
 if [[ "${arg_h:?}" = "1" ]]; then
   # Help exists with code 1
@@ -362,32 +370,27 @@ fi
 ### Validation. Error out if the things required for your script are not present
 ##############################################################################
 
-[[ "${arg_f:-}" ]]     || help      "Setting a filename with -f or --file is required"
 [[ "${LOG_LEVEL:-}" ]] || emergency "Cannot continue without LOG_LEVEL. "
 
 
 ### Runtime
 ##############################################################################
-
-info "__i_am_main_script: ${__i_am_main_script}"
-info "__file: ${__file}"
-info "__dir: ${__dir}"
-info "__base: ${__base}"
-info "OSTYPE: ${OSTYPE}"
-
-info "arg_f: ${arg_f}"
-info "arg_d: ${arg_d}"
-info "arg_v: ${arg_v}"
-info "arg_h: ${arg_h}"
-
-info "$(echo -e "multiple lines example - line #1\nmultiple lines example - line #2\nimagine logging the output of 'ls -al /path/'")"
+# help mode
+if [[ "${arg_c:?}" = "1" ]]; then
+  # Help exists with code 1
+  info "Setting up VSCode"
+  mkdir -p .vscode
+  if [[ -f .vscode/launch.json ]]; then
+    notice ".vscode/launch.json exists. Skipped."
+  else
+    curl  -o .vscode/launch.json https://gist.githubusercontent.com/simgunz/1c0966f9a32d8c30d6d0fe3945ef529d/raw/dd5025ef0ce831fddf93a1a8f1fdffa501bbd74e/launch.json
+  fi
+  if [[ -f .vscode/settings.json ]]; then
+    notice ".vscode/settings.json exists. Skipped."
+  else
+    curl  -o .vscode/settings.json https://gist.githubusercontent.com/simgunz/1756f9eccc65e2439509c1261545bf9d/raw/6a9549bf6dbe3097fe5b6a8f78d5c18df827502b/settings.json
+  fi
+fi
 
 # All of these go to STDERR, so you can use STDOUT for piping machine readable information to other software
-debug "Info useful to developers for debugging the application, not useful during operations."
-info "Normal operational messages - may be harvested for reporting, measuring throughput, etc. - no action required."
-notice "Events that are unusual but not error conditions - might be summarized in an email to developers or admins to spot potential problems - no immediate action required."
-warning "Warning messages, not an error, but indication that an error will occur if action is not taken, e.g. file system 85% full - each item must be resolved within a given time. This is a debug message"
-error "Non-urgent failures, these should be relayed to developers or admins; each item must be resolved within a given time."
-critical "Should be corrected immediately, but indicates failure in a primary system, an example is a loss of a backup ISP connection."
-alert "Should be corrected immediately, therefore notify staff who can fix the problem. An example would be the loss of a primary ISP connection."
-emergency "A \"panic\" condition usually affecting multiple apps/servers/sites. At this level it would usually notify all tech staff on call."
+
