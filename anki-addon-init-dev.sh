@@ -136,6 +136,7 @@ function help () {
 
 # shellcheck disable=SC2015
 [[ "${__usage+x}" ]] || read -r -d '' __usage <<-'EOF' || true # exits non-zero when EOF encountered
+  -a --addon [arg]       Add-on repository
   -c --vs-code           Setup Visual Studio Code
   -f --forms             Compile *.ui forms
   -t --target-dir [arg]  Target directory where to setup the project [default: current directory]
@@ -376,12 +377,11 @@ fi
 
 ### Runtime
 ##############################################################################
-
 arg_t=${arg_t:-$(pwd)}
 
 # Setup project folders
-mkdir -p anki/profiles
-mkdir -p releases/
+mkdir -p "${arg_t}/anki/profiles/addon21/"
+mkdir -p "${arg_t}/releases/"
 
 # Setup Visual Studio Code
 if [[ "${arg_c:?}" = "1" ]]; then
