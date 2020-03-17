@@ -346,7 +346,6 @@ __b3bp_err_report() {
 # Uncomment the following line for always providing an error backtrace
 # trap '__b3bp_err_report "${FUNCNAME:-.}" ${LINENO}' ERR
 
-
 ### Command-line argument switches (like -d for debugmode, -h for showing helppage)
 ##############################################################################
 
@@ -369,6 +368,23 @@ if [[ "${arg_h:?}" = "1" ]]; then
   help "Help using ${0}"
 fi
 
+### Utilities
+##############################################################################
+
+# _command_exists()
+#
+# Usage:
+#   _command_exists "possible_command_name"
+#
+# Returns:
+#   0  If a command with the given name is defined in the current environment.
+#   1  If not.
+#
+# Information on why `hash` is used here:
+# http://stackoverflow.com/a/677212
+_command_exists() {
+  hash "${1}" 2>/dev/null
+}
 
 ### Validation. Error out if the things required for your script are not present
 ##############################################################################
@@ -384,6 +400,20 @@ __quietflag=''
 if [[ ${arg_q:-} = "1" ]]; then
   __outstream='/dev/null'
   __quietflag='-q'
+fi
+
+# Install required system packages
+for cmd in pacman rustup ; do
+  _command_exists ${cmd} || __install_packages+=(${cmd})
+done
+
+if [[ ${__install_packages:-} ]]; then
+  info "Installing missing system packages: ${__install_packages[@]}"
+  if _command_exists pacman ; then
+    sudo pacman -S ${__install_packages[@]} --needed
+  elif _command_exists apt-get ; then
+    sudo apt-get install ${__install_packages[@]}
+  fi
 fi
 
 # Set working directory
