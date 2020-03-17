@@ -165,7 +165,10 @@ EOF
 
 
  EXAMPLES:
-   anki-addon-dev-init
+   # Initial project setup
+   anki-addon-init-dev --quiet --target-dir myproject-dir --vs-code --build-forms --addon-url git@github.com:user/myrepo
+   # Update project
+   anki-addon-init-dev --quiet --target-dir myproject-dir --update-anki --build-forms
 EOF
 
 # Translate usage string -> getopts arguments, and set $arg_<flag> defaults
