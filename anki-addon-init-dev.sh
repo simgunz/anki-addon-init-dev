@@ -136,15 +136,15 @@ function help () {
 
 # shellcheck disable=SC2015
 [[ "${__usage+x}" ]] || read -r -d '' __usage <<-'EOF' || true # exits non-zero when EOF encountered
-  -a --addon [arg]       Add-on repository
+  -a --addon-url [arg]   URL of add-on repository for cloning.
   -c --vs-code           Setup Visual Studio Code
-  -f --forms             Compile *.ui forms
-  -t --target-dir [arg]  Target directory where to setup the project [default: current directory]
-  -u --update            Update Anki
   -d --debug             Debug mode
-  -q --quiet             Quiet mode
-  -v --verbose           Enable verbose mode, print script as it is executed
+  -f --build-forms       Compile *.ui forms using addon/tools/build_ui.sh
   -h --help              This page
+  -q --quiet             Quiet mode
+  -t --target-dir [arg]  Target directory where to setup the project [default: current directory]
+  -u --update-anki       Update Anki to the latest stable release
+  -v --verbose           Enable verbose mode, print script as it is executed
 EOF
 
 # shellcheck disable=SC2015
