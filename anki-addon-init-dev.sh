@@ -136,12 +136,13 @@ function help () {
 
 # shellcheck disable=SC2015
 [[ "${__usage+x}" ]] || read -r -d '' __usage <<-'EOF' || true # exits non-zero when EOF encountered
-  -u --update      Update Anki
-  -c --vs-code     Setup Visual Studio Code
-  -u --build-ui    Compile *.ui forms
-  -d --debug       Debug mode
-  -v               Enable verbose mode, print script as it is executed
-  -h --help        This page
+  -c --vs-code           Setup Visual Studio Code
+  -f --forms             Compile *.ui forms
+  -t --target-dir [arg]  Target directory where to setup the project [default: current directory]
+  -u --update            Update Anki
+  -d --debug             Debug mode
+  -v                     Enable verbose mode, print script as it is executed
+  -h --help              This page
 EOF
 
 # shellcheck disable=SC2015
@@ -371,23 +372,52 @@ fi
 ##############################################################################
 
 [[ "${LOG_LEVEL:-}" ]] || emergency "Cannot continue without LOG_LEVEL. "
-
+[[ "${arg_t:-}" ]] || arg_t=${arg_t:-$(pwd)} && info "Target directory set to ${arg_t}"
 
 ### Runtime
 ##############################################################################
-# help mode
+
+arg_t=${arg_t:-$(pwd)}
+
+# Setup project folders
+mkdir -p anki/profiles
+mkdir -p releases/
+
+# Setup Visual Studio Code
 if [[ "${arg_c:?}" = "1" ]]; then
   # Help exists with code 1
   info "Setting up VSCode"
-  mkdir -p .vscode
-  if [[ -f .vscode/launch.json ]]; then
+  mkdir -p "${arg_t}/.vscode"
+  if [[ -f "${arg_t}/.vscode/launch.json" ]]; then
     notice ".vscode/launch.json exists. Skipped."
   else
-    curl  -s -o .vscode/launch.json https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/launch.json
+    curl  -s -o "${arg_t}/.vscode/launch.json" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/launch.json
   fi
-  if [[ -f .vscode/settings.json ]]; then
+  if [[ -f "${arg_t}/.vscode/settings.json" ]]; then
     notice ".vscode/settings.json exists. Skipped."
   else
-    curl  -s -o .vscode/settings.json https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/settings.json
+    curl  -s -o "${arg_t}/.vscode/settings.json" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/settings.json
   fi
+fi
+
+# Clone Anki
+build_anki=0
+if [[ ! -d "${arg_t}/anki/anki" ]]; then
+  info "Cloning Anki..."
+  git clone https://github.com/ankitects/anki.git "${arg_t}/anki/anki"
+  arg_u=1
+fi
+
+if [[ "${arg_u:?}" = "1" ]]; then
+  build_anki=1
+  cd "${arg_t}/anki/anki"
+  latesttag=$(git describe --tags)
+  info "Checking out Anki tag: ${latesttag}..."
+  git checkout ${latesttag}
+fi
+
+if [[ "${build_anki}" = "1" ]]; then
+  info "Building Anki..."
+  cd "${arg_t}/anki/anki"
+  ./run
 fi
