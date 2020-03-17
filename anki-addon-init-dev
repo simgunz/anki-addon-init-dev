@@ -495,5 +495,5 @@ fi
 if [[ "${build_anki}" = "1" ]]; then
   info "Building Anki..."
   cd "${arg_t}/anki/anki"
-  ./run > ${__outstream}
+  ./run -b "${arg_t}/anki/profiles" > ${__outstream}
 fi
