@@ -101,7 +101,7 @@ function __b3bp_log () {
 function emergency () {                                __b3bp_log emergency "${@}"; exit 1; }
 function alert ()     { [[ "${LOG_LEVEL:-0}" -ge 1 ]] && __b3bp_log alert "${@}"; true; }
 function critical ()  { [[ "${LOG_LEVEL:-0}" -ge 2 ]] && __b3bp_log critical "${@}"; true; }
-function error ()     { [[ "${LOG_LEVEL:-0}" -ge 3 ]] && __b3bp_log error "${@}"; true; }
+function error ()     { [[ "${LOG_LEVEL:-0}" -ge 3 ]] && __b3bp_log error "${@}"; exit 1; }
 function warning ()   { [[ "${LOG_LEVEL:-0}" -ge 4 ]] && __b3bp_log warning "${@}"; true; }
 function notice ()    { [[ "${LOG_LEVEL:-0}" -ge 5 ]] && __b3bp_log notice "${@}"; true; }
 function info ()      { [[ "${LOG_LEVEL:-0}" -ge 6 ]] && __b3bp_log info "${@}"; true; }
@@ -428,11 +428,11 @@ arg_t=$(realpath ${arg_t})
 info "Target directory set to ${arg_t}"
 
 # Setup project folders
-mkdir -p "${arg_t}/anki/profiles/addon21/"
+mkdir -p "${arg_t}/anki/profiles/addons21/"
 mkdir -p "${arg_t}/releases/"
 
 # Setup addon
-
+[[ ${arg_a:-} || -d "${arg_t}/addon" ]] || error "${arg_t}/addon/ folder does not exists and -a option not specified"
 if [[ ${arg_a:-} ]]; then
   if [[ ! -d "${arg_t}/addon" ]]; then
     info "Cloning Addon: ${arg_a}..."
@@ -442,8 +442,15 @@ if [[ ${arg_a:-} ]]; then
   fi
 fi
 
-# ln -s "${arg_t}/addon/" "${arg_t}/anki/profiles/addon21/"
+# Link addon package folder to Anki addons folder
+if [[ ! ${arg_u:-} = "1" ]]; then
+  info "Linking addon package to Anki addons folder"
+  printf "Please select the Anki addon package folder:\n"
+  select __addon_pkg in "${arg_t}/addon/"*/; do test -n "${__addon_pkg}" && break; echo ">>> Invalid Selection"; done
+  ln -sf "${__addon_pkg}" "${arg_t}/anki/profiles/addons21/"
+fi
 
+# Compile UI forms
 if [[ ${arg_f:-} = "1" ]]; then
   info "Compiling UI forms..."
   cd "${arg_t}/addon/"
