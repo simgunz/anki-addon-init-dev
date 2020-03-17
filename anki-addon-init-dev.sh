@@ -142,7 +142,8 @@ function help () {
   -t --target-dir [arg]  Target directory where to setup the project [default: current directory]
   -u --update            Update Anki
   -d --debug             Debug mode
-  -v                     Enable verbose mode, print script as it is executed
+  -q --quiet             Quiet mode
+  -v --verbose           Enable verbose mode, print script as it is executed
   -h --help              This page
 EOF
 
@@ -373,15 +374,33 @@ fi
 ##############################################################################
 
 [[ "${LOG_LEVEL:-}" ]] || emergency "Cannot continue without LOG_LEVEL. "
-[[ "${arg_t:-}" ]] || arg_t=${arg_t:-$(pwd)} && info "Target directory set to ${arg_t}"
+[[ "${arg_t:-}" ]] || arg_t=$(pwd)
 
 ### Runtime
 ##############################################################################
-arg_t=$(realpath ${arg_t:-$(pwd)})
+# Set quiet mode
+__outstream='/dev/stdout'
+__quietflag=''
+if [[ ${arg_q:-} = "1" ]]; then
+  __outstream='/dev/null'
+  __quietflag='-q'
+fi
+
+# Set working directory
+arg_t=$(realpath ${arg_t})
+info "Target directory set to ${arg_t}"
 
 # Setup project folders
 mkdir -p "${arg_t}/anki/profiles/addon21/"
 mkdir -p "${arg_t}/releases/"
+
+# Setup addon
+if [[ ${arg_a:-} ]]; then
+  info "Cloning Addon: ${arg_a}..."
+  git clone ${__quietflag} ${arg_a} "${arg_t}/addon"
+fi
+
+# ln -s "${arg_t}/addon/" "${arg_t}/anki/profiles/addon21/"
 
 # Setup Visual Studio Code
 if [[ "${arg_c:?}" = "1" ]]; then
@@ -404,7 +423,7 @@ fi
 build_anki=0
 if [[ ! -d "${arg_t}/anki/anki" ]]; then
   info "Cloning Anki..."
-  git clone https://github.com/ankitects/anki.git "${arg_t}/anki/anki"
+  git clone ${__quietflag} https://github.com/ankitects/anki.git "${arg_t}/anki/anki"
   arg_u=1
 fi
 
@@ -413,11 +432,12 @@ if [[ "${arg_u:?}" = "1" ]]; then
   cd "${arg_t}/anki/anki"
   latesttag=$(git describe --tags)
   info "Checking out Anki tag: ${latesttag}..."
-  git checkout ${latesttag}
+  git config advice.detachedHead false
+  git checkout ${__quietflag} ${latesttag}
 fi
 
 if [[ "${build_anki}" = "1" ]]; then
   info "Building Anki..."
   cd "${arg_t}/anki/anki"
-  ./run
+  ./run > ${__outstream}
 fi
