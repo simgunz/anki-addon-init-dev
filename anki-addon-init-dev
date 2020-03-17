@@ -153,22 +153,26 @@ EOF
  This script initialize a development environment for developing an anki addon.
 
  The resulting project structure is:
-   addon/
+   addon/                  # Addon repository
    anki/
-   |-- anki/
+   |-- anki/               # Anki repository (latest stable version)
    |-- profiles/
+       |-- addons21/
+           |-- myaddon/    -> ../../../../addon/
    releases/
-   .pyenv -> anki/anki/pyenv
-   .vscode
+   .pyenv                  -> anki/anki/pyenv
+   .vscode                 # VSCode settings
    |-- launch.json
    |-- settings.json
 
 
  EXAMPLES:
+
    # Initial project setup
-   anki-addon-init-dev --quiet --target-dir myproject-dir --vs-code --build-forms --addon-url git@github.com:user/myrepo
+   anki-addon-init-dev -q -t myproject-dir -c -f -a git@github.com:user/myrepo
+
    # Update project
-   anki-addon-init-dev --quiet --target-dir myproject-dir --update-anki --build-forms
+   anki-addon-init-dev -q -t myproject-dir -u -f
 EOF
 
 # Translate usage string -> getopts arguments, and set $arg_<flag> defaults
