@@ -454,6 +454,7 @@ fi
 if [[ "${arg_c:?}" = "1" ]]; then
   # Help exists with code 1
   info "Setting up VSCode"
+  ln -sf "${arg_t}/anki/anki/pyenv" "${arg_t}/.pyenv"  # Required for VSCode to detect venv
   mkdir -p "${arg_t}/.vscode"
   if [[ -f "${arg_t}/.vscode/launch.json" ]]; then
     notice ".vscode/launch.json exists. Skipped."
