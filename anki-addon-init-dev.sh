@@ -377,7 +377,7 @@ fi
 
 ### Runtime
 ##############################################################################
-arg_t=${arg_t:-$(pwd)}
+arg_t=$(realpath ${arg_t:-$(pwd)})
 
 # Setup project folders
 mkdir -p "${arg_t}/anki/profiles/addon21/"
