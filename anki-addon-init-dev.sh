@@ -425,12 +425,23 @@ mkdir -p "${arg_t}/anki/profiles/addon21/"
 mkdir -p "${arg_t}/releases/"
 
 # Setup addon
+
 if [[ ${arg_a:-} ]]; then
-  info "Cloning Addon: ${arg_a}..."
-  git clone ${__quietflag} ${arg_a} "${arg_t}/addon"
+  if [[ ! -d "${arg_t}/addon" ]]; then
+    info "Cloning Addon: ${arg_a}..."
+    git clone ${__quietflag} ${arg_a} "${arg_t}/addon"
+  else
+    warning "Addon folder exists. Not cloning."
+  fi
 fi
 
 # ln -s "${arg_t}/addon/" "${arg_t}/anki/profiles/addon21/"
+
+if [[ ${arg_f:-} = "1" ]]; then
+  info "Compiling UI forms..."
+  cd "${arg_t}/addon/"
+  bash ./tools/build_ui.sh > ${__outstream}
+fi
 
 # Setup Visual Studio Code
 if [[ "${arg_c:?}" = "1" ]]; then
