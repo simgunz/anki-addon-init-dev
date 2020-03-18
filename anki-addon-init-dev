@@ -470,12 +470,12 @@ if [[ "${arg_c:?}" = "1" ]]; then
   if [[ -f "${arg_t}/.vscode/launch.json" ]]; then
     notice ".vscode/launch.json exists. Skipped."
   else
-    curl  -s -o "${arg_t}/.vscode/launch.json" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/launch.json
+    curl  -s -o "${arg_t}/.vscode/launch.json" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/assets/vscode/launch.json
   fi
   if [[ -f "${arg_t}/.vscode/settings.json" ]]; then
     notice ".vscode/settings.json exists. Skipped."
   else
-    curl  -s -o "${arg_t}/.vscode/settings.json" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/settings.json
+    curl  -s -o "${arg_t}/.vscode/settings.json" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/assets/vscode/settings.json
   fi
 fi
 
