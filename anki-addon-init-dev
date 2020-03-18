@@ -479,6 +479,7 @@ fi
 # Generate script to run Anki
 if [[ "${arg_r:?}" = "1" ]]; then
   curl -s -o "${arg_t}/run" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/assets/run
+  chmod u+x "${arg_t}/run"
 fi
 
 # Clone Anki
