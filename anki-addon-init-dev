@@ -161,6 +161,7 @@ EOF
        |-- addons21/
            |-- myaddon/    -> ../../../../addon/
    releases/
+   .addonpkg               # Config file storing the addon package name
    .pyenv                  -> anki/anki/pyenv
    .vscode                 # VSCode settings
    |-- launch.json
@@ -444,11 +445,13 @@ if [[ ${arg_a:-} ]]; then
 fi
 
 # Link addon package folder to Anki addons folder
-if [[ ! ${arg_u:-} = "1" ]]; then
+if [[ ! -f "${arg_t}/.addonpkg" ]]; then
   info "Linking addon package to Anki addons folder"
   printf "Please select the Anki addon package folder:\n"
-  select __addon_pkg in "${arg_t}/addon/"*/; do test -n "${__addon_pkg}" && break; echo ">>> Invalid Selection"; done
-  ln -sf "${__addon_pkg}" "${arg_t}/anki/profiles/addons21/"
+  select __addon_pkg_dir in "${arg_t}/addon/"*/; do test -n "${__addon_pkg_dir}" && break; echo ">>> Invalid Selection"; done
+  __addon_pkg=$(basename "${__addon_pkg_dir}")
+  echo ${__addon_pkg} > "${arg_t}/.addonpkg"  # Store the package name for later use
+  ln -sf "${__addon_pkg_dir}" "${arg_t}/anki/profiles/addons21/"
 fi
 
 # Compile UI forms
