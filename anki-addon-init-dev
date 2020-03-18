@@ -142,6 +142,7 @@ function help () {
   -f --build-forms       Compile *.ui forms using addon/tools/build_ui.sh
   -h --help              This page
   -q --quiet             Quiet mode
+  -r --run-script        Generate a script to run anki
   -t --target-dir [arg]  Target directory where to setup the project [default: current directory]
   -u --update-anki       Update Anki to the latest stable release
   -v --verbose           Enable verbose mode, print script as it is executed
@@ -473,6 +474,11 @@ if [[ "${arg_c:?}" = "1" ]]; then
   else
     curl  -s -o "${arg_t}/.vscode/settings.json" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/vscode/settings.json
   fi
+fi
+
+# Generate script to run Anki
+if [[ "${arg_r:?}" = "1" ]]; then
+  curl -s -o "${arg_t}/run" https://raw.githubusercontent.com/simgunz/anki-addon-init-dev/master/assets/run
 fi
 
 # Clone Anki

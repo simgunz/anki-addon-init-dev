@@ -1,0 +1,2 @@
+ #!/usr/bin/env bash
+ ./anki/anki/run -b ./anki/profiles
