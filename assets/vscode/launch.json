@@ -7,7 +7,10 @@
             "request": "launch",
             "program": "${workspaceFolder}/anki/anki/qt/runanki",
             "args": ["-b", "${workspaceFolder}/anki/profiles/"],
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "env": {
+                "ANKIDEV": "1",
+            },
         },
         {
             "name": "Debug Web",
@@ -17,8 +20,9 @@
             "args": ["-b", "${workspaceFolder}/anki/profiles/"],
             "console": "integratedTerminal",
             "env": {
+                "ANKIDEV": "1",
                 "QTWEBENGINE_REMOTE_DEBUGGING": "8080",
-            }
+            },
         }
     ]
 }
